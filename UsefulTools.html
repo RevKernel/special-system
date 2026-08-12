@@ -1,0 +1,1843 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>多功能工具箱</title>
+    <style>
+        /* ===== CSS Variables ===== */
+        :root {
+            --primary: #007AFF;
+            --primary-dark: #0055CC;
+            --primary-light: #3399FF;
+            --bg: #F4F6FC;
+            --card-bg: #FFFFFF;
+            --text: #2D2D3F;
+            --text-light: #6B6B80;
+            --border: #E8ECF4;
+            --shadow: 0 8px 30px rgba(0, 122, 255, 0.12);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: 0.25s ease;
+            --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== Scrollbar ===== */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 8px;
+        }
+
+        /* ===== Header ===== */
+        .app-header {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.92);
+        }
+
+        .app-header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), #66B2FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ===== Category Tabs ===== */
+        .category-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 14px 24px;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 72px;
+            z-index: 99;
+            backdrop-filter: blur(6px);
+            background: rgba(255, 255, 255, 0.88);
+        }
+
+        .category-tabs button {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--bg);
+            color: var(--text-light);
+            font-family: var(--font);
+        }
+        .category-tabs button:hover {
+            background: var(--primary);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+        .category-tabs button.active {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(0, 122, 255, 0.30);
+        }
+
+        /* ===== Main Content ===== */
+        .main-content {
+            flex: 1;
+            padding: 20px 24px 60px;
+            max-width: 1440px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
+            animation: fadeUp 0.35s ease;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== Tool Card ===== */
+        .tool-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px 22px 24px;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+        .tool-card:hover {
+            box-shadow: 0 12px 40px rgba(0, 122, 255, 0.13);
+            transform: translateY(-2px);
+        }
+
+        .tool-card .tool-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            gap: 10px;
+        }
+        .tool-card .tool-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tool-card .tool-header h3 .badge {
+            font-size: 11px;
+            background: var(--bg);
+            color: var(--text-light);
+            padding: 1px 10px;
+            border-radius: 30px;
+            font-weight: 500;
+        }
+
+        .tool-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .tool-body label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tool-body input,
+        .tool-body select,
+        .tool-body textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-family: var(--font);
+            transition: var(--transition);
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+            resize: vertical;
+        }
+        .tool-body input:focus,
+        .tool-body select:focus,
+        .tool-body textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.12);
+            background: #fff;
+        }
+        .tool-body textarea {
+            min-height: 60px;
+            max-height: 180px;
+        }
+        .tool-body textarea.small {
+            min-height: 44px;
+        }
+
+        .tool-body .row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .tool-body .row.gap-sm {
+            gap: 6px;
+        }
+        .tool-body .row.flex-1 {
+            flex: 1;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            border: 1.5px solid transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            justify-content: center;
+            white-space: nowrap;
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
+            box-shadow: 0 4px 14px rgba(0, 122, 255, 0.30);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border-color: var(--border);
+        }
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-success {
+            background: #10B981;
+            color: #fff;
+            border-color: #10B981;
+        }
+        .btn-success:hover {
+            background: #059669;
+            border-color: #059669;
+        }
+
+        .btn-danger {
+            background: #EF4444;
+            color: #fff;
+            border-color: #EF4444;
+        }
+        .btn-danger:hover {
+            background: #DC2626;
+            border-color: #DC2626;
+        }
+
+        .btn-warning {
+            background: #F59E0B;
+            color: #fff;
+            border-color: #F59E0B;
+        }
+        .btn-warning:hover {
+            background: #D97706;
+            border-color: #D97706;
+        }
+
+        .btn-sm {
+            padding: 5px 14px;
+            font-size: 12px;
+        }
+        .btn-xs {
+            padding: 3px 10px;
+            font-size: 11px;
+        }
+
+        .tool-body .result-box {
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            font-size: 14px;
+            word-break: break-all;
+            border: 1px solid var(--border);
+            min-height: 40px;
+            max-height: 160px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            color: var(--text);
+            position: relative;
+        }
+        .tool-body .result-box .copy-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            padding: 2px 12px;
+            font-size: 11px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-light);
+        }
+        .tool-body .result-box .copy-btn:hover {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        .tool-body .range-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        .tool-body .range-label input[type="range"] {
+            flex: 1;
+            padding: 0;
+            border: none;
+            background: transparent;
+            accent-color: var(--primary);
+        }
+
+        /* ===== Special: Flashlight ===== */
+        .flashlight-overlay {
+            position: fixed;
+            inset: 0;
+            background: #ffffff;
+            z-index: 9999;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .flashlight-overlay.active {
+            display: flex;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .app-header {
+                padding: 12px 16px;
+            }
+            .app-header h1 {
+                font-size: 18px;
+            }
+            .category-tabs {
+                padding: 10px 16px;
+                gap: 6px;
+                top: 62px;
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+            .category-tabs button {
+                font-size: 12px;
+                padding: 6px 14px;
+                flex-shrink: 0;
+            }
+            .main-content {
+                padding: 12px 12px 40px;
+            }
+            .tools-grid {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+            .tool-card {
+                padding: 16px 16px 20px;
+            }
+            .tool-body .row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .tool-body .row .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app-header h1 {
+                font-size: 16px;
+            }
+            .tool-card .tool-header h3 {
+                font-size: 14px;
+            }
+        }
+
+        /* ===== Utility ===== */
+        .mt-1 {
+            margin-top: 6px;
+        }
+        .mb-1 {
+            margin-bottom: 6px;
+        }
+        .flex-center {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .text-muted {
+            color: var(--text-light);
+            font-size: 13px;
+        }
+        .w-full {
+            width: 100%;
+        }
+        .gap-2 {
+            gap: 8px;
+        }
+        .flex-wrap {
+            flex-wrap: wrap;
+        }
+        .inline-flex {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .font-mono {
+            font-family: 'Courier New', monospace;
+        }
+        .text-center {
+            text-align: center;
+        }
+
+        /* sensor permission hint */
+        .perm-hint {
+            font-size: 12px;
+            color: var(--text-light);
+            background: #FEF3C7;
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        /* stopwatch */
+        .stopwatch-display {
+            font-size: 32px;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            padding: 8px 0;
+            letter-spacing: 2px;
+            color: var(--primary);
+        }
+
+        /* color picker */
+        .color-preview {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        /* db meter */
+        .db-bar-wrap {
+            background: var(--bg);
+            border-radius: 30px;
+            height: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .db-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #10B981, #F59E0B, #EF4444);
+            border-radius: 30px;
+            transition: width 0.1s ease;
+        }
+
+        /* sensor values */
+        .sensor-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+        }
+        .sensor-grid .s-item {
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            padding: 8px 10px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+        .sensor-grid .s-item .label {
+            font-size: 11px;
+            color: var(--text-light);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .sensor-grid .s-item .value {
+            font-size: 18px;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--text);
+            color: #fff;
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0;
+            transition: all 0.35s ease;
+            z-index: 999;
+            pointer-events: none;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.20);
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* tool hidden */
+        .tool-card.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== Toast ===== -->
+    <div id="toast" class="toast"></div>
+
+    <!-- ===== Flashlight Overlay ===== -->
+    <div id="flashlightOverlay" class="flashlight-overlay" onclick="exitFlashlight()"></div>
+
+    <!-- ===== Header ===== -->
+    <header class="app-header">
+        <h1>工具箱</h1>
+    </header>
+
+    <!-- ===== Category Tabs ===== -->
+    <nav class="category-tabs" id="categoryTabs">
+        <button class="active" data-cat="all">全部</button>
+        <button data-cat="calc">计算</button>
+        <button data-cat="text">文本</button>
+        <button data-cat="encode">编码</button>
+        <button data-cat="utils">实用</button>
+        <button data-cat="system">系统</button>
+        <button data-cat="sensor">传感器</button>
+    </nav>
+
+    <!-- ===== Main ===== -->
+    <main class="main-content">
+        <div class="tools-grid" id="toolsGrid">
+
+            <!-- 1 计数器 -->
+            <div class="tool-card" data-cat="calc">
+                <div class="tool-header">
+                    <h3>1. 计数器 <span class="badge">计算</span></h3>
+                </div>
+                <div class="tool-body">
+                    <div class="text-center" style="font-size:48px;font-weight:700;color:var(--primary);padding:4px 0;" id="counterDisplay">0</div>
+                    <div class="row">
+                        <button class="btn btn-primary" onclick="counterAdd(1)">+1</button>
+                        <button class="btn btn-outline" onclick="counterAdd(-1)">-1</button>
+                        <button class="btn btn-danger" onclick="counterReset()">重置</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2 计算器 -->
+            <div class="tool-card" data-cat="calc">
+                <div class="tool-header">
+                    <h3>2. 计算器 <span class="badge">计算</span></h3>
+                </div>
+                <div class="tool-body">
+                    <input type="text" id="calcInput" placeholder="输入表达式，如 2+3*4" value="2+3*4">
+                    <div class="row">
+                        <button class="btn btn-primary" onclick="calcEval()">计算</button>
+                        <button class="btn btn-outline" onclick="document.getElementById('calcInput').value=''">清空</button>
+                    </div>
+                    <div class="result-box" id="calcResult">结果：14</div>
+                </div>
+            </div>
+
+            <!-- 3 随机数生成 -->
+            <div class="tool-card" data-cat="calc">
+                <div class="tool-header">
+                    <h3>3. 随机数生成 <span class="badge">计算</span></h3>
+                </div>
+                <div class="tool-body">
+                    <div class="row">
+                        <label>最小值</label>
+                        <input type="number" id="randMin" value="1" style="flex:1;width:auto;">
+                        <label>最大值</label>
+                        <input type="number" id="randMax" value="100" style="flex:1;width:auto;">
+                    </div>
+                    <div class="row">
+                        <label><input type="radio" name="randType" value="int" checked> 整数</label>
+                        <label><input type="radio" name="randType" value="float"> 浮点</label>
+                    </div>
+                    <div class="row">
+                        <button class="btn btn-primary" onclick="generateRandom()">生成</button>
+                        <button class="btn btn-outline" onclick="copyResult('randResult')">复制</button>
+                    </div>
+                    <div class="result-box" id="randResult">点击生成</div>
+                </div>
+            </div>
+
+            <!-- 4 温度换算 -->
+            <div class="tool-card" data-cat="calc">
+                <div class="tool-header">
+                    <h3>4. 温度换算 <span class="badge">计算</span></h3>
+                </div>
+                <div class="tool-body">
+                    <div class="row">
+                        <div style="flex:1;">
+                            <label>摄氏度</label>
+                            <input type="number" id="tempC" value="0" step="any" oninput="tempCtoF()">
+                        </div>
+                        <div style="flex:1;">
+                            <label>华氏度</label>
+                            <input type="number" id="tempF" value="32" step="any" oninput="tempFtoC()">
+                        </div>
+                    </div>
+                    <div class="text-muted text-center">双向同步换算</div>
+                </div>
+            </div>
+
+            <!-- 5 进制转换 -->
+            <div class="tool-card" data-cat="calc">
+                <div class="tool-header">
+                    <h3>5. 进制转换 <span class="badge">计算</span></h3>
+                </div>
+                <div class="tool-body">
+                    <label>十进制</label>
+                    <input type="number" id="decInput" value="255" oninput="convertBase()">
+                    <div class="row">
+                        <div style="flex:1;"><label>二进制</label><div class="result-box" id="binResult" style="min-height:32px;">11111111</div></div>
+                        <div style="flex:1;"><label>八进制</label><div class="result-box" id="octResult" style="min-height:32px;">377</div></div>
+                        <div style="flex:1;"><label>十六进制</label><div class="result-box" id="hexResult" style="min-height:32px;">FF</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6 大小写转换 -->
+            <div class="tool-card" data-cat="text">
+                <div class="tool-header">
+                    <h3>6. 大小写转换 <span class="badge">文本</span></h3>
+                </div>
+                <div class="tool-body">
+                    <textarea id="caseInput" placeholder="输入文本">Hello World</textarea>
+                    <div class="row">
+                        <button class="btn btn-primary btn-sm" onclick="caseConvert('upper')">全大写</button>
+                        <button class="btn btn-primary btn-sm" onclick="caseConvert('lower')">全小写</button>
+                        <button class="btn btn-primary btn-sm" onclick="caseConvert('capitalize')">首字母大写</button>
+                    </div>
+                    <div class="result-box" id="caseResult">HELLO WORLD</div>
+                </div>
+            </div>
+
+            <!-- 7 反转字符串 -->
+            <div class="tool-card" data-cat="text">
+                <div class="tool-header">
+                    <h3>7. 反转字符串 <span class="badge">文本</span></h3>
+                </div>
+                <div class="tool-body">
+                    <textarea id="reverseInput" placeholder="输入文本">Hello World</textarea>
+                    <button class="btn btn-primary" onclick="reverseString()">反转</button>
+                    <div class="result-box" id="reverseResult">dlroW olleH</div>
+                </div>
+            </div>
+
+            <!-- 8 文本统计 -->
+            <div class="tool-card" data-cat="text">
+                <div class="tool-header">
+                    <h3>8. 文本统计 <span class="badge">文本</span></h3>
+                </div>
+                <div class="tool-body">
+                    <textarea id="statsInput" placeholder="输入文本">Hello World! 你好</textarea>
+                    <button class="btn btn-primary" onclick="textStats()">统计</button>
+                    <div class="result-box" id="statsResult">字符数(含空格): 16 | 字符数(不含空格): 13 | 单词数: 3 | 行数: 1</div>
+                </div>
+            </div>
+
+            <!-- 9 重复文本 -->
+            <div class="tool-card" data-cat="text">
+                <div class="tool-header">
+                    <h3>9. 重复文本 <span class="badge">文本</span></h3>
+                </div>
+                <div class="tool-body">
+                    <input type="text" id="repeatInput" placeholder="输入文本" value="Hi!">
+                    <div class="row">
+                        <label>重复次数 (≤50)</label>
+                        <input type="number" id="repeatCount" value="3" min="1" max="50" style="width:80px;">
+                    </div>
+                    <button class="btn btn-primary" onclick="repeatText()">重复</button>
+                    <div class="result-box" id="repeatResult">Hi!Hi!Hi!</div>
+                </div>
+            </div>
+
+            <!-- 10 替换文本 -->
+            <div class="tool-card" data-cat="text">
+                <div class="tool-header">
+                    <h3>10. 替换文本 <span class="badge">文本</span></h3>
+                </div>
+                <div class="tool-body">
+                    <textarea id="replaceInput" placeholder="输入原始文本">Hello World, Hello JS</textarea>
+                    <div class="row">
+                        <input type="text" id="replaceFind" placeholder="查找" value="Hello" style="flex:1;">
+                        <input type="text" id="replaceWith" placeholder="替换为" value="Hi" style="flex:1;">
+                    </div>
+                    <div class="row">
+                        <label><input type="checkbox" id="replaceRegex"> 正则</label>
+                        <label><input type="checkbox" id="replaceGlobal" checked> 全局</label>
+                    </div>
+                    <button class="btn btn-primary" onclick="replaceText()">替换</button>
+                    <div class="result-box" id="replaceResult">Hi World, Hi JS</div>
+                </div>
+            </div>
+
+            <!-- 11 去空白 -->
+            <div class="tool-card" data-cat="text">
+                <div class="tool-header">
+                    <h3>11. 去空白 <span class="badge">文本</span></h3>
+                </div>
+                <div class="tool-body">
+                    <textarea id="trimInput" placeholder="输入带空白的文本">   Hello   World   </textarea>
+                    <div class="row">
+                        <button class="btn btn-primary btn-sm" onclick="trimText('both')">首尾去空</button>
+                        <button class="btn btn-primary btn-sm" onclick="trimText('all')">全部去空</button>
+                        <button class="btn btn-primary btn-sm" onclick="trimText('lines')">去空行</button>
+                    </div>
+                    <div class="result-box" id="trimResult">Hello   World</div>
+                </div>
+            </div>
+
+            <!-- 12 JSON 格式化 -->
+            <div class="tool-card" data-cat="encode">
+                <div class="tool-header">
+                    <h3>12. JSON 格式化 <span class="badge">编码</span></h3>
+                </div>
+                <div class="tool-body">
+                    <textarea id="jsonInput" placeholder='{"name":"工具","version":1}'>{"name":"工具","version":1}</textarea>
+                    <div class="row">
+                        <button class="btn btn-primary btn-sm" onclick="jsonFormat('pretty')">格式化</button>
+                        <button class="btn btn-outline btn-sm" onclick="jsonFormat('compact')">压缩</button>
+                    </div>
+                    <div class="result-box" id="jsonResult">{
+                        "name": "工具",
+                        "version": 1
+                    }</div>
+                </div>
+            </div>
+
+            <!-- 13 Base64 编解码 -->
+            <div class="tool-card" data-cat="encode">
+                <div class="tool-header">
+                    <h3>13. Base64 编解码 <span class="badge">编码</span></h3>
+                </div>
+                <div class="tool-body">
+                    <textarea id="base64Input" placeholder="输入文本">Hello World</textarea>
+                    <div class="row">
+                        <button class="btn btn-primary btn-sm" onclick="base64Encode()">编码</button>
+                        <button class="btn btn-outline btn-sm" onclick="base64Decode()">解码</button>
+                    </div>
+                    <div class="result-box" id="base64Result">SGVsbG8gV29ybGQ=</div>
+                </div>
+            </div>
+
+            <!-- 14 UUID 生成 -->
+            <div class="tool-card" data-cat="encode">
+                <div class="tool-header">
+                    <h3>14. UUID v4 <span class="badge">编码</span></h3>
+                </div>
+                <div class="tool-body">
+                    <button class="btn btn-primary" onclick="generateUUID()">生成 UUID v4</button>
+                    <div class="result-box" id="uuidResult">点击生成</div>
+                </div>
+            </div>
+
+            <!-- 15 密码生成 -->
+            <div class="tool-card" data-cat="encode">
+                <div class="tool-header">
+                    <h3>15. 密码生成 <span class="badge">编码</span></h3>
+                </div>
+                <div class="tool-body">
+                    <div class="row">
+                        <label>长度</label>
+                        <input type="number" id="pwdLength" value="12" min="4" max="64" style="width:80px;">
+                    </div>
+                    <div class="row">
+                        <label><input type="radio" name="pwdType" value="all" checked> 全部字符</label>
+                        <label><input type="radio" name="pwdType" value="alnum"> 字母+数字</label>
+                    </div>
+                    <div class="row">
+                        <button class="btn btn-primary" onclick="generatePassword()">生成密码</button>
+                        <button class="btn btn-outline" onclick="copyResult('pwdResult')">复制</button>
+                    </div>
+                    <div class="result-box" id="pwdResult">点击生成</div>
+                </div>
+            </div>
+
+            <!-- 16 单位换算 -->
+            <div class="tool-card" data-cat="utils">
+                <div class="tool-header">
+                    <h3>16. 单位换算 <span class="badge">实用</span></h3>
+                </div>
+                <div class="tool-body">
+                    <div class="row">
+                        <input type="number" id="unitValue" value="1" step="any" style="flex:1;">
+                        <select id="unitFrom" style="flex:1;">
+                            <option value="m">米</option>
+                            <option value="ft">英尺</option>
+                            <option value="in">英寸</option>
+                        </select>
+                        <span>→</span>
+                        <select id="unitTo" style="flex:1;">
+                            <option value="ft">英尺</option>
+                            <option value="m">米</option>
+                            <option value="in">英寸</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" onclick="unitConvert()">换算</button>
+                    <div class="result-box" id="unitResult">3.28084 英尺</div>
+                </div>
+            </div>
+
+            <!-- 17 秒表 -->
+            <div class="tool-card" data-cat="utils">
+                <div class="tool-header">
+                    <h3>17. 秒表 <span class="badge">实用</span></h3>
+                </div>
+                <div class="tool-body">
+                    <div class="stopwatch-display" id="stopwatchDisplay">00:00.0</div>
+                    <div class="row">
+                        <button class="btn btn-success" id="stopwatchStart" onclick="stopwatchStart()">开始</button>
+                        <button class="btn btn-warning" id="stopwatchPause" onclick="stopwatchPause()" disabled>暂停</button>
+                        <button class="btn btn-danger" onclick="stopwatchReset()">重置</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 18 倒计时 -->
+            <div class="tool-card" data-cat="utils">
+                <div class="tool-header">
+                    <h3>18. 倒计时 <span class="badge">实用</span></h3>
+                </div>
+                <div class="tool-body">
+                    <div class="row">
+                        <label>秒数</label>
+                        <input type="number" id="countdownInput" value="10" min="1" max="3600" style="width:100px;">
+                    </div>
+                    <div class="stopwatch-display" id="countdownDisplay">00:10</div>
+                    <div class="row">
+                        <button class="btn btn-success" id="cdStart" onclick="countdownStart()">开始</button>
+                        <button class="btn btn-danger" onclick="countdownReset()">重置</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 19 拾色器 -->
+            <div class="tool-card" data-cat="utils">
+                <div class="tool-header">
+                    <h3>19. 拾色器 <span class="badge">实用</span></h3>
+                </div>
+                <div class="tool-body">
+                    <div class="row">
+                        <input type="color" id="colorPicker" value="#007AFF" onchange="colorPick()" style="width:60px;height:50px;padding:2px;border:none;cursor:pointer;">
+                        <div class="color-preview" id="colorPreview" style="background:#007AFF;"></div>
+                        <input type="text" id="colorHex" value="#007AFF" style="flex:1;" readonly>
+                    </div>
+                    <button class="btn btn-outline btn-sm" onclick="copyResult('colorHex')">复制 HEX</button>
+                </div>
+            </div>
+
+            <!-- 20 截图 -->
+            <div class="tool-card" data-cat="utils">
+                <div class="tool-header">
+                    <h3>20. 截图 <span class="badge">实用</span></h3>
+                </div>
+                <div class="tool-body">
+                    <button class="btn btn-primary" onclick="takeScreenshot()">截取当前页面</button>
+                    <div class="result-box" id="screenshotResult" style="min-height:60px;display:flex;align-items:center;justify-content:center;color:var(--text-light);">
+                        点击按钮截图
+                    </div>
+                </div>
+            </div>
+
+            <!-- 21 IP 查询 -->
+            <div class="tool-card" data-cat="utils">
+                <div class="tool-header">
+                    <h3>21. IP 查询 <span class="badge">实用</span></h3>
+                </div>
+                <div class="tool-body">
+                    <button class="btn btn-primary" onclick="queryIP()">获取公网 IP</button>
+                    <div class="result-box" id="ipResult">点击查询</div>
+                </div>
+            </div>
+
+            <!-- 22 电池信息 -->
+            <div class="tool-card" data-cat="system">
+                <div class="tool-header">
+                    <h3>22. 电池信息 <span class="badge">系统</span></h3>
+                </div>
+                <div class="tool-body">
+                    <button class="btn btn-primary" onclick="getBatteryInfo()">获取电池信息</button>
+                    <div class="result-box" id="batteryResult">点击获取</div>
+                </div>
+            </div>
+
+            <!-- 23 设备信息 -->
+            <div class="tool-card" data-cat="system">
+                <div class="tool-header">
+                    <h3>23. 设备信息 <span class="badge">系统</span></h3>
+                </div>
+                <div class="tool-body">
+                    <button class="btn btn-primary" onclick="getDeviceInfo()">获取设备信息</button>
+                    <div class="result-box" id="deviceResult">点击获取</div>
+                </div>
+            </div>
+
+            <!-- 24 延迟测试 -->
+            <div class="tool-card" data-cat="system">
+                <div class="tool-header">
+                    <h3>24. 延迟测试 <span class="badge">系统</span></h3>
+                </div>
+                <div class="tool-body">
+                    <button class="btn btn-primary" onclick="pingTest()">Ping 8.8.8.8</button>
+                    <div class="result-box" id="pingResult">点击测试</div>
+                </div>
+            </div>
+
+            <!-- 25 陀螺仪 -->
+            <div class="tool-card" data-cat="sensor">
+                <div class="tool-header">
+                    <h3>25. 陀螺仪 <span class="badge">传感器</span></h3>
+                </div>
+                <div class="tool-body">
+                    <button class="btn btn-primary" id="gyroBtn" onclick="toggleGyroscope()">启动</button>
+                    <span class="perm-hint">需权限</span>
+                    <div class="sensor-grid">
+                        <div class="s-item"><div class="label">α (Z)</div><div class="value" id="gyroA">0.0</div></div>
+                        <div class="s-item"><div class="label">β (X)</div><div class="value" id="gyroB">0.0</div></div>
+                        <div class="s-item"><div class="label">γ (Y)</div><div class="value" id="gyroG">0.0</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 26 指南针 -->
+            <div class="tool-card" data-cat="sensor">
+                <div class="tool-header">
+                    <h3>26. 指南针 <span class="badge">传感器</span></h3>
+                </div>
+                <div class="tool-body">
+                    <button class="btn btn-primary" id="compassBtn" onclick="toggleCompass()">启动</button>
+                    <span class="perm-hint">需权限</span>
+                    <div class="text-center" style="font-size:48px;padding:8px 0;" id="compassDisplay">N</div>
+                    <div class="text-center" style="font-size:22px;font-weight:700;color:var(--primary);" id="compassAngle">0°</div>
+                </div>
+            </div>
+
+            <!-- 27 加速度 -->
+            <div class="tool-card" data-cat="sensor">
+                <div class="tool-header">
+                    <h3>27. 加速度 <span class="badge">传感器</span></h3>
+                </div>
+                <div class="tool-body">
+                    <button class="btn btn-primary" id="accelBtn" onclick="toggleAccelerometer()">启动</button>
+                    <span class="perm-hint">需权限</span>
+                    <div class="sensor-grid">
+                        <div class="s-item"><div class="label">X</div><div class="value" id="accelX">0.0</div></div>
+                        <div class="s-item"><div class="label">Y</div><div class="value" id="accelY">0.0</div></div>
+                        <div class="s-item"><div class="label">Z</div><div class="value" id="accelZ">0.0</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 28 分贝仪 -->
+            <div class="tool-card" data-cat="sensor">
+                <div class="tool-header">
+                    <h3>28. 分贝仪 <span class="badge">传感器</span></h3>
+                </div>
+                <div class="tool-body">
+                    <button class="btn btn-primary" id="dbBtn" onclick="toggleDecibel()">启动</button>
+                    <span class="perm-hint">需权限</span>
+                    <div class="text-center" style="font-size:32px;font-weight:700;color:var(--primary);" id="dbDisplay">-- dB</div>
+                    <div class="db-bar-wrap"><div class="db-bar" id="dbBar" style="width:0%;"></div></div>
+                    <div class="text-muted text-center" style="font-size:12px;">实时分贝 (环境噪音参考)</div>
+                </div>
+            </div>
+
+            <!-- 29 手电筒 -->
+            <div class="tool-card" data-cat="sensor">
+                <div class="tool-header">
+                    <h3>29. 手电筒 <span class="badge">传感器</span></h3>
+                </div>
+                <div class="tool-body">
+                    <button class="btn btn-primary" id="flashlightBtn" onclick="toggleFlashlight()">打开</button>
+                    <div class="text-muted text-center" style="font-size:12px;">点击屏幕退出</div>
+                </div>
+            </div>
+
+        </div><!-- /tools-grid -->
+    </main>
+
+    <!-- ============================================================ -->
+    <script>
+        // ===== Toast =====
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            clearTimeout(t._timer);
+            t._timer = setTimeout(() => t.classList.remove('show'), 2000);
+        }
+
+        function copyResult(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const text = el.textContent.trim();
+            if (!text || text === '点击生成' || text === '点击查询' || text === '点击获取' || text === '点击测试' || text === '点击按钮截图' ||
+                text === '-- dB' || text === '0°' || text === '点击启动' || text === '点击开始') {
+                showToast('没有可复制的内容');
+                return;
+            }
+            navigator.clipboard.writeText(text).then(() => showToast('已复制')).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                ta.remove();
+                showToast('已复制');
+            });
+        }
+
+        // ===== Category Filter =====
+        document.querySelectorAll('#categoryTabs button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('#categoryTabs button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const cat = this.dataset.cat;
+                document.querySelectorAll('.tool-card').forEach(card => {
+                    if (cat === 'all' || card.dataset.cat === cat) {
+                        card.classList.remove('hidden');
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                });
+            });
+        });
+
+        // ================================================================
+        // 1 计数器
+        let counterVal = 0;
+
+        function counterUpdate() {
+            document.getElementById('counterDisplay').textContent = counterVal;
+        }
+
+        function counterAdd(delta) {
+            counterVal += delta;
+            counterUpdate();
+        }
+
+        function counterReset() {
+            counterVal = 0;
+            counterUpdate();
+        }
+
+        // ================================================================
+        // 2 计算器
+        function calcEval() {
+            const input = document.getElementById('calcInput').value.trim();
+            if (!input) { document.getElementById('calcResult').textContent = '请输入表达式'; return; }
+            try {
+                const sanitized = input.replace(/[^0-9+\-*/().]/g, '');
+                if (!sanitized) throw new Error('无效表达式');
+                const result = Function('"use strict"; return (' + sanitized + ')')();
+                document.getElementById('calcResult').textContent = '结果：' + result;
+            } catch (e) {
+                document.getElementById('calcResult').textContent = '表达式错误';
+            }
+        }
+        document.getElementById('calcInput').addEventListener('keydown', e => { if (e.key === 'Enter') calcEval(); });
+
+        // ================================================================
+        // 3 随机数生成
+        function generateRandom() {
+            const min = parseFloat(document.getElementById('randMin').value) || 0;
+            const max = parseFloat(document.getElementById('randMax').value) || 100;
+            const isInt = document.querySelector('input[name="randType"]:checked').value === 'int';
+            if (min >= max) { document.getElementById('randResult').textContent = '最小值需小于最大值'; return; }
+            let val;
+            if (isInt) {
+                val = Math.floor(Math.random() * (max - min + 1)) + min;
+            } else {
+                val = Math.random() * (max - min) + min;
+            }
+            document.getElementById('randResult').textContent = val;
+        }
+
+        // ================================================================
+        // 4 温度换算
+        function tempCtoF() {
+            const c = parseFloat(document.getElementById('tempC').value);
+            if (isNaN(c)) return;
+            const f = c * 9 / 5 + 32;
+            document.getElementById('tempF').value = f.toFixed(2);
+        }
+
+        function tempFtoC() {
+            const f = parseFloat(document.getElementById('tempF').value);
+            if (isNaN(f)) return;
+            const c = (f - 32) * 5 / 9;
+            document.getElementById('tempC').value = c.toFixed(2);
+        }
+
+        // ================================================================
+        // 5 进制转换
+        function convertBase() {
+            const dec = parseInt(document.getElementById('decInput').value);
+            if (isNaN(dec) || dec < 0) {
+                document.getElementById('binResult').textContent = '—';
+                document.getElementById('octResult').textContent = '—';
+                document.getElementById('hexResult').textContent = '—';
+                return;
+            }
+            document.getElementById('binResult').textContent = dec.toString(2);
+            document.getElementById('octResult').textContent = dec.toString(8);
+            document.getElementById('hexResult').textContent = dec.toString(16).toUpperCase();
+        }
+
+        // ================================================================
+        // 6 大小写转换
+        function caseConvert(type) {
+            const input = document.getElementById('caseInput').value;
+            let result;
+            switch (type) {
+                case 'upper':
+                    result = input.toUpperCase();
+                    break;
+                case 'lower':
+                    result = input.toLowerCase();
+                    break;
+                case 'capitalize':
+                    result = input.replace(/(^\s*\w|[.!?]\s*\w)/g, c => c.toUpperCase());
+                    break;
+                default:
+                    result = input;
+            }
+            document.getElementById('caseResult').textContent = result;
+        }
+
+        // ================================================================
+        // 7 反转字符串
+        function reverseString() {
+            const input = document.getElementById('reverseInput').value;
+            document.getElementById('reverseResult').textContent = input.split('').reverse().join('');
+        }
+
+        // ================================================================
+        // 8 文本统计
+        function textStats() {
+            const input = document.getElementById('statsInput').value;
+            const charsWith = input.length;
+            const charsWithout = input.replace(/\s/g, '').length;
+            const words = input.trim() ? input.trim().split(/\s+/).length : 0;
+            const lines = input ? input.split('\n').length : 0;
+            document.getElementById('statsResult').textContent =
+                `字符数(含空格): ${charsWith} | 字符数(不含空格): ${charsWithout} | 单词数: ${words} | 行数: ${lines}`;
+        }
+
+        // ================================================================
+        // 9 重复文本
+        function repeatText() {
+            const text = document.getElementById('repeatInput').value;
+            let count = parseInt(document.getElementById('repeatCount').value) || 1;
+            if (count < 1) count = 1;
+            if (count > 50) count = 50;
+            document.getElementById('repeatCount').value = count;
+            document.getElementById('repeatResult').textContent = text.repeat(count);
+        }
+
+        // ================================================================
+        // 10 替换文本
+        function replaceText() {
+            const input = document.getElementById('replaceInput').value;
+            let find = document.getElementById('replaceFind').value;
+            const replace = document.getElementById('replaceWith').value;
+            const isRegex = document.getElementById('replaceRegex').checked;
+            const isGlobal = document.getElementById('replaceGlobal').checked;
+            try {
+                let result;
+                if (isRegex) {
+                    const flags = isGlobal ? 'g' : '';
+                    const regex = new RegExp(find, flags);
+                    result = input.replace(regex, replace);
+                } else {
+                    result = isGlobal ? input.split(find).join(replace) : input.replace(find, replace);
+                }
+                document.getElementById('replaceResult').textContent = result;
+            } catch (e) {
+                document.getElementById('replaceResult').textContent = '正则表达式错误';
+            }
+        }
+
+        // ================================================================
+        // 11 去空白
+        function trimText(type) {
+            const input = document.getElementById('trimInput').value;
+            let result;
+            switch (type) {
+                case 'both':
+                    result = input.trim();
+                    break;
+                case 'all':
+                    result = input.replace(/\s/g, '');
+                    break;
+                case 'lines':
+                    result = input.split('\n').filter(line => line.trim()).join('\n');
+                    break;
+                default:
+                    result = input;
+            }
+            document.getElementById('trimResult').textContent = result;
+        }
+
+        // ================================================================
+        // 12 JSON 格式化
+        function jsonFormat(type) {
+            const input = document.getElementById('jsonInput').value.trim();
+            try {
+                const parsed = JSON.parse(input);
+                const result = type === 'pretty' ? JSON.stringify(parsed, null, 2) : JSON.stringify(parsed);
+                document.getElementById('jsonResult').textContent = result;
+            } catch (e) {
+                document.getElementById('jsonResult').textContent = '无效 JSON';
+            }
+        }
+
+        // ================================================================
+        // 13 Base64
+        function base64Encode() {
+            const input = document.getElementById('base64Input').value;
+            try {
+                document.getElementById('base64Result').textContent = btoa(unescape(encodeURIComponent(input)));
+            } catch (e) {
+                document.getElementById('base64Result').textContent = '编码失败';
+            }
+        }
+
+        function base64Decode() {
+            const input = document.getElementById('base64Input').value;
+            try {
+                document.getElementById('base64Result').textContent = decodeURIComponent(escape(atob(input)));
+            } catch (e) {
+                document.getElementById('base64Result').textContent = '解码失败';
+            }
+        }
+
+        // ================================================================
+        // 14 UUID
+        function generateUUID() {
+            const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+            document.getElementById('uuidResult').textContent = uuid;
+        }
+
+        // ================================================================
+        // 15 密码生成
+        function generatePassword() {
+            const len = parseInt(document.getElementById('pwdLength').value) || 12;
+            const type = document.querySelector('input[name="pwdType"]:checked').value;
+            let chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            if (type === 'all') chars += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+            let pwd = '';
+            for (let i = 0; i < len; i++) {
+                pwd += chars[Math.floor(Math.random() * chars.length)];
+            }
+            document.getElementById('pwdResult').textContent = pwd;
+        }
+
+        // ================================================================
+        // 16 单位换算
+        const unitMap = { m: 1, ft: 3.28084, in: 39.3701 };
+
+        function unitConvert() {
+            const val = parseFloat(document.getElementById('unitValue').value);
+            if (isNaN(val)) { document.getElementById('unitResult').textContent = '请输入数值'; return; }
+            const from = document.getElementById('unitFrom').value;
+            const to = document.getElementById('unitTo').value;
+            const result = val * (unitMap[to] / unitMap[from]);
+            const labels = { m: '米', ft: '英尺', in: '英寸' };
+            document.getElementById('unitResult').textContent = result.toFixed(6) + ' ' + labels[to];
+        }
+
+        // ================================================================
+        // 17 秒表
+        let swTime = 0,
+            swInterval = null,
+            swRunning = false;
+
+        function swFormat(t) {
+            const mins = Math.floor(t / 600);
+            const secs = Math.floor((t % 600) / 10);
+            const tenths = Math.floor(t % 10);
+            return String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0') + '.' + tenths;
+        }
+
+        function swUpdate() {
+            document.getElementById('stopwatchDisplay').textContent = swFormat(swTime);
+        }
+
+        function stopwatchStart() {
+            if (swRunning) return;
+            swRunning = true;
+            document.getElementById('stopwatchStart').disabled = true;
+            document.getElementById('stopwatchPause').disabled = false;
+            const startTime = Date.now() - swTime * 100;
+            swInterval = setInterval(() => {
+                swTime = Math.floor((Date.now() - startTime) / 100);
+                swUpdate();
+            }, 100);
+        }
+
+        function stopwatchPause() {
+            if (!swRunning) return;
+            swRunning = false;
+            clearInterval(swInterval);
+            document.getElementById('stopwatchStart').disabled = false;
+            document.getElementById('stopwatchPause').disabled = true;
+        }
+
+        function stopwatchReset() {
+            swRunning = false;
+            clearInterval(swInterval);
+            swTime = 0;
+            swUpdate();
+            document.getElementById('stopwatchStart').disabled = false;
+            document.getElementById('stopwatchPause').disabled = true;
+        }
+
+        // ================================================================
+        // 18 倒计时
+        let cdTime = 0,
+            cdInterval = null,
+            cdRunning = false;
+
+        function cdFormat(t) {
+            const mins = Math.floor(t / 60);
+            const secs = Math.floor(t % 60);
+            return String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+        }
+
+        function cdUpdate() {
+            document.getElementById('countdownDisplay').textContent = cdFormat(cdTime);
+            if (cdTime <= 0 && cdRunning) {
+                cdRunning = false;
+                clearInterval(cdInterval);
+                document.getElementById('cdStart').disabled = false;
+                try {
+                    const ctx = new(window.AudioContext || window.webkitAudioContext)();
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.frequency.value = 880;
+                    gain.gain.value = 0.3;
+                    osc.start();
+                    setTimeout(() => { osc.stop();
+                        ctx.close(); }, 400);
+                } catch (e) { /* silent */ }
+                showToast('倒计时结束！');
+            }
+        }
+
+        function countdownStart() {
+            if (cdRunning) return;
+            const val = parseInt(document.getElementById('countdownInput').value);
+            if (isNaN(val) || val < 1) { showToast('请输入有效秒数'); return; }
+            cdTime = val;
+            cdRunning = true;
+            document.getElementById('cdStart').disabled = true;
+            cdUpdate();
+            cdInterval = setInterval(() => {
+                cdTime--;
+                cdUpdate();
+            }, 1000);
+        }
+
+        function countdownReset() {
+            cdRunning = false;
+            clearInterval(cdInterval);
+            const val = parseInt(document.getElementById('countdownInput').value) || 10;
+            cdTime = val;
+            cdUpdate();
+            document.getElementById('cdStart').disabled = false;
+        }
+        (function() {
+            const val = parseInt(document.getElementById('countdownInput').value) || 10;
+            cdTime = val;
+            cdUpdate();
+        })();
+
+        // ================================================================
+        // 19 拾色器
+        function colorPick() {
+            const val = document.getElementById('colorPicker').value;
+            document.getElementById('colorPreview').style.background = val;
+            document.getElementById('colorHex').value = val;
+        }
+
+        // ================================================================
+        // 20 截图
+        function takeScreenshot() {
+            const el = document.getElementById('screenshotResult');
+            el.textContent = '截图中...';
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+            script.onload = function() {
+                html2canvas(document.body, {
+                    scale: 1.5,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#F4F6FC'
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = 'screenshot.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    el.textContent = '截图已导出 (PNG)';
+                }).catch(() => {
+                    el.textContent = '截图失败，请允许跨域或使用其他方式';
+                });
+            };
+            script.onerror = function() {
+                el.textContent = '加载截图库失败，请检查网络';
+            };
+            document.head.appendChild(script);
+        }
+
+        // ================================================================
+        // 21 IP 查询
+        function queryIP() {
+            const el = document.getElementById('ipResult');
+            el.textContent = '查询中...';
+            fetch('https://api.ipify.org?format=json')
+                .then(r => r.json())
+                .then(data => {
+                    el.textContent = data.ip || '未获取到';
+                })
+                .catch(() => {
+                    el.textContent = '查询失败，请检查网络';
+                });
+        }
+
+        // ================================================================
+        // 22 电池信息
+        function getBatteryInfo() {
+            const el = document.getElementById('batteryResult');
+            if (!navigator.getBattery) {
+                el.textContent = '此浏览器不支持 Battery API';
+                return;
+            }
+            navigator.getBattery().then(battery => {
+                const level = Math.round(battery.level * 100);
+                const charging = battery.charging ? '充电中' : '未充电';
+                el.textContent = `电量: ${level}% | ${charging} | 剩余时间: ${battery.dischargingTime ? Math.round(battery.dischargingTime/60)+'分钟' : '未知'}`;
+            }).catch(() => {
+                el.textContent = '无法获取电池信息';
+            });
+        }
+
+        // ================================================================
+        // 23 设备信息
+        function getDeviceInfo() {
+            const el = document.getElementById('deviceResult');
+            const ua = navigator.userAgent;
+            const res = `${window.screen.width}×${window.screen.height}`;
+            const lang = navigator.language || navigator.languages?.[0] || '未知';
+            const platform = navigator.platform || '未知';
+            el.textContent = `UA: ${ua}\n分辨率: ${res}\n语言: ${lang}\n平台: ${platform}`;
+        }
+
+        // ================================================================
+        // 24 延迟测试
+        function pingTest() {
+            const el = document.getElementById('pingResult');
+            el.textContent = '测试中...';
+            const start = Date.now();
+            fetch('https://8.8.8.8', { mode: 'no-cors', cache: 'no-cache' })
+                .then(() => {
+                    const delay = Date.now() - start;
+                    el.textContent = `延迟: ~${delay}ms (估算)`;
+                })
+                .catch(() => {
+                    const img = new Image();
+                    const t = Date.now();
+                    img.onload = () => {
+                        const d = Date.now() - t;
+                        el.textContent = `延迟: ~${d}ms (估算)`;
+                    };
+                    img.onerror = () => {
+                        const d = Date.now() - t;
+                        el.textContent = `延迟: ~${d}ms (估算, 可能不准确)`;
+                    };
+                    img.src = 'https://8.8.8.8/favicon.ico?t=' + Date.now();
+                    setTimeout(() => {
+                        if (el.textContent === '测试中...') {
+                            el.textContent = '测试超时，请检查网络';
+                        }
+                    }, 5000);
+                });
+            setTimeout(() => {
+                if (el.textContent === '测试中...') {
+                    el.textContent = '测试超时，请检查网络';
+                }
+            }, 6000);
+        }
+
+        // ================================================================
+        // 25 陀螺仪 (toggle)
+        let gyroActive = false;
+        let gyroHandler = null;
+
+        function toggleGyroscope() {
+            const btn = document.getElementById('gyroBtn');
+            if (gyroActive) {
+                // 关闭
+                window.removeEventListener('deviceorientation', gyroHandler);
+                gyroActive = false;
+                btn.textContent = '启动';
+                btn.className = 'btn btn-primary';
+                showToast('陀螺仪已关闭');
+                return;
+            }
+            // 启动
+            if (!window.DeviceOrientationEvent) {
+                showToast('此设备不支持陀螺仪');
+                return;
+            }
+            const requestPermission = () => {
+                if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                    DeviceOrientationEvent.requestPermission().then(state => {
+                        if (state === 'granted') {
+                            startGyro();
+                        } else {
+                            showToast('陀螺仪权限被拒绝');
+                        }
+                    }).catch(() => { showToast('权限请求失败'); });
+                } else {
+                    startGyro();
+                }
+            };
+            const startGyro = () => {
+                gyroActive = true;
+                gyroHandler = function(e) {
+                    document.getElementById('gyroA').textContent = (e.alpha || 0).toFixed(1);
+                    document.getElementById('gyroB').textContent = (e.beta || 0).toFixed(1);
+                    document.getElementById('gyroG').textContent = (e.gamma || 0).toFixed(1);
+                };
+                window.addEventListener('deviceorientation', gyroHandler);
+                btn.textContent = '关闭';
+                btn.className = 'btn btn-danger';
+                showToast('陀螺仪已启动');
+            };
+            requestPermission();
+        }
+
+        // ================================================================
+        // 26 指南针 (toggle)
+        let compassActive = false;
+        let compassHandler = null;
+
+        function toggleCompass() {
+            const btn = document.getElementById('compassBtn');
+            if (compassActive) {
+                window.removeEventListener('deviceorientation', compassHandler);
+                compassActive = false;
+                btn.textContent = '启动';
+                btn.className = 'btn btn-primary';
+                showToast('指南针已关闭');
+                return;
+            }
+            if (!window.DeviceOrientationEvent) {
+                showToast('此设备不支持指南针');
+                return;
+            }
+            const requestPermission = () => {
+                if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                    DeviceOrientationEvent.requestPermission().then(state => {
+                        if (state === 'granted') {
+                            startCompass();
+                        } else {
+                            showToast('指南针权限被拒绝');
+                        }
+                    }).catch(() => { showToast('权限请求失败'); });
+                } else {
+                    startCompass();
+                }
+            };
+            const startCompass = () => {
+                compassActive = true;
+                compassHandler = function(e) {
+                    const angle = e.alpha || 0;
+                    document.getElementById('compassAngle').textContent = Math.round(angle) + '°';
+                    const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+                    const idx = Math.round(angle / 45) % 8;
+                    document.getElementById('compassDisplay').textContent = dirs[idx] || 'N';
+                };
+                window.addEventListener('deviceorientation', compassHandler);
+                btn.textContent = '关闭';
+                btn.className = 'btn btn-danger';
+                showToast('指南针已启动');
+            };
+            requestPermission();
+        }
+
+        // ================================================================
+        // 27 加速度 (toggle)
+        let accelActive = false;
+        let accelHandler = null;
+
+        function toggleAccelerometer() {
+            const btn = document.getElementById('accelBtn');
+            if (accelActive) {
+                window.removeEventListener('devicemotion', accelHandler);
+                accelActive = false;
+                btn.textContent = '启动';
+                btn.className = 'btn btn-primary';
+                showToast('加速度已关闭');
+                return;
+            }
+            if (!window.DeviceMotionEvent) {
+                showToast('此设备不支持加速度');
+                return;
+            }
+            const requestPermission = () => {
+                if (typeof DeviceMotionEvent.requestPermission === 'function') {
+                    DeviceMotionEvent.requestPermission().then(state => {
+                        if (state === 'granted') {
+                            startAccel();
+                        } else {
+                            showToast('加速度权限被拒绝');
+                        }
+                    }).catch(() => { showToast('权限请求失败'); });
+                } else {
+                    startAccel();
+                }
+            };
+            const startAccel = () => {
+                accelActive = true;
+                accelHandler = function(e) {
+                    const acc = e.accelerationIncludingGravity || e.acceleration;
+                    if (acc) {
+                        document.getElementById('accelX').textContent = (acc.x || 0).toFixed(2);
+                        document.getElementById('accelY').textContent = (acc.y || 0).toFixed(2);
+                        document.getElementById('accelZ').textContent = (acc.z || 0).toFixed(2);
+                    }
+                };
+                window.addEventListener('devicemotion', accelHandler);
+                btn.textContent = '关闭';
+                btn.className = 'btn btn-danger';
+                showToast('加速度已启动');
+            };
+            requestPermission();
+        }
+
+        // ================================================================
+        // 28 分贝仪 (toggle)
+        let dbActive = false;
+        let dbCtx = null,
+            dbAnalyser = null,
+            dbData = null,
+            dbStream = null,
+            dbAnimationId = null;
+
+        function toggleDecibel() {
+            const btn = document.getElementById('dbBtn');
+            if (dbActive) {
+                // 关闭
+                if (dbAnimationId) cancelAnimationFrame(dbAnimationId);
+                if (dbCtx && dbCtx.state !== 'closed') dbCtx.close();
+                if (dbStream) dbStream.getTracks().forEach(t => t.stop());
+                dbActive = false;
+                btn.textContent = '启动';
+                btn.className = 'btn btn-primary';
+                document.getElementById('dbDisplay').textContent = '-- dB';
+                document.getElementById('dbBar').style.width = '0%';
+                showToast('分贝仪已关闭');
+                return;
+            }
+            // 启动
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                showToast('此设备不支持麦克风');
+                return;
+            }
+            navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+                .then(stream => {
+                    dbStream = stream;
+                    dbCtx = new(window.AudioContext || window.webkitAudioContext)();
+                    dbAnalyser = dbCtx.createAnalyser();
+                    dbAnalyser.fftSize = 512;
+                    const source = dbCtx.createMediaStreamSource(stream);
+                    source.connect(dbAnalyser);
+                    dbData = new Uint8Array(dbAnalyser.fftSize);
+                    dbActive = true;
+                    btn.textContent = '关闭';
+                    btn.className = 'btn btn-danger';
+                    showToast('麦克风已启动');
+                    updateDB();
+                })
+                .catch(() => {
+                    showToast('无法访问麦克风，请检查权限');
+                });
+        }
+
+        function updateDB() {
+            if (!dbActive) return;
+            dbAnalyser.getByteFrequencyData(dbData);
+            let sum = 0;
+            for (let i = 0; i < dbData.length; i++) {
+                sum += dbData[i];
+            }
+            const avg = sum / dbData.length;
+            let db = 20 + (avg / 255) * 80;
+            db = Math.min(100, Math.max(20, db));
+            document.getElementById('dbDisplay').textContent = Math.round(db) + ' dB';
+            const pct = ((db - 20) / 80) * 100;
+            document.getElementById('dbBar').style.width = Math.min(100, pct) + '%';
+            dbAnimationId = requestAnimationFrame(updateDB);
+        }
+
+        // ================================================================
+        // 29 手电筒 (toggle)
+        let flashlightOn = false;
+
+        function toggleFlashlight() {
+            const btn = document.getElementById('flashlightBtn');
+            const overlay = document.getElementById('flashlightOverlay');
+            if (flashlightOn) {
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+                flashlightOn = false;
+                btn.textContent = '打开';
+                btn.className = 'btn btn-primary';
+            } else {
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                flashlightOn = true;
+                btn.textContent = '关闭';
+                btn.className = 'btn btn-danger';
+            }
+        }
+
+        function exitFlashlight() {
+            if (flashlightOn) {
+                toggleFlashlight();
+            }
+        }
+
+        // ================================================================
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            textStats();
+            convertBase();
+            tempCtoF();
+            colorPick();
+            counterUpdate();
+            generateRandom();
+            generateUUID();
+            generatePassword();
+            unitConvert();
+            countdownReset();
+            replaceText();
+            jsonFormat('pretty');
+            base64Encode();
+        });
+
+        console.log('工具箱已加载！共29个工具');
+    </script>
+</body>
+</html>
